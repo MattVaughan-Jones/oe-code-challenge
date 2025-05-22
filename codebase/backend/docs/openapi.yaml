@@ -1,0 +1,255 @@
+openapi: '3.0.0'
+info:
+  title: Origin Energy Account Management API
+  version: '1.0.0'
+  description: Origin Energy Take Home Challenge
+
+servers:
+  - url: http://localhost:3001
+    description: dev
+
+paths:
+  /accounts:
+    get:
+      summary: Get all accounts with account information
+      responses:
+        '200':
+          description: List of accounts with account information
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnergyAccountWithBalance'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+  
+  /accounts/{accountId}/payments:
+    get:
+      summary: Get payments for an account
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of payments for the account
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentObject'
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Account not found"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to fetch payment history"
+    
+  /payments:
+    post:
+      summary: Process a new payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentPostRequestBody'
+      responses:
+        '200':
+          description: Payment processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Bad Request - Invalid payment data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'CVV must have 3 or 4 digits'
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '415':
+          description: Unsupported Media Type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Unsupported Media Type"
+                  message:
+                    type: string
+                    example: "Content-Type must be application/json"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /payments/{accountId}:
+    get:
+      summary: Get payments for an account
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of payments for the account
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentObject'
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Account not found"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to fetch payment history"
+
+components:
+  schemas:
+    EnergyAccountWithBalance:
+      type: object
+      properties:
+        id:
+          type: string
+        balance:
+          type: number
+        type:
+          type: string
+          enum: [GAS, ELECTRICITY]
+        address:
+          type: string
+        meterNumber:
+          type: string
+          description: Present only when type is ELECTRICITY
+        volume:
+          type: number
+          description: Present only when type is GAS
+      required:
+        - id
+        - balance
+        - type
+        - address
+      oneOf:
+        - properties:
+            type:
+              enum: [GAS]
+            volume:
+              type: number
+          required: ['volume']
+        - properties:
+            type:
+              enum: [ELECTRICITY]
+            meterNumber:
+              type: string
+          required: ['meterNumber']
+    
+    PaymentObject:
+      type: object
+      properties:
+        id:
+          type: string
+        amount:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+        accountId:
+          type: string
+    
+    PaymentPostRequestBody:
+      type: object
+      required:
+        - accountId
+        - amount
+        - cardNumber
+        - expiry
+        - cvv
+      properties:
+        accountId:
+          type: string
+          description: ID of the account to make payment for
+        amount:
+          type: string
+          description: Payment amount (e.g. "100.00")
+          pattern: '^\d+(\.\d{0,2})?$'
+        cardNumber:
+          type: string
+          description: 16-digit card number
+          pattern: '^\d{16}$'
+        expiry:
+          type: string
+          description: Card expiry date in MM/YY format
+          pattern: '^\d{2}\/\d{2}$'
+        cvv:
+          type: string
+          description: Card verification value
+          pattern: '^\d{3,4}$'
