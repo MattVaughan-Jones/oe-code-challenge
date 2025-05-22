@@ -13,6 +13,7 @@
 
 TODO with more time:
 
+- Implement accessibility
 - UI library
 - Outsource payment handling to a 3rd party provider for security/scope of responsibility reasons
 - Make search bar and dropdown components reusable
