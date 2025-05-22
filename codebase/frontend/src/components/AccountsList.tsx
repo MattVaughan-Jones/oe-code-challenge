@@ -1,22 +1,28 @@
-import React from 'react';
-import { AccountCard } from './AccountCard';
-import { EnergyAccount } from '../types/types';
+import React from 'react'
+import { AccountCard } from './AccountCard'
+import { EnergyAccountWithBalance } from '../types/types'
 
-interface AccountsListProps {
-    accounts: EnergyAccount[];
-    onMakePayment: (accountId: string) => void;
+type AccountsListProps = {
+  accounts: EnergyAccountWithBalance[]
+  onMakePayment: (account: EnergyAccountWithBalance) => void
+  onViewPaymentHistory: (account: EnergyAccountWithBalance) => void
 }
 
-export const AccountsList: React.FC<AccountsListProps> = ({ accounts, onMakePayment }) => {
-    return (
-        <div>
-            {accounts.map(account => (
-                <AccountCard
-                    key={account.id}
-                    account={account}
-                    onMakePayment={onMakePayment}
-                />
-            ))}
-        </div>
-    );
-};
+export const AccountsList: React.FC<AccountsListProps> = ({
+  accounts,
+  onMakePayment,
+  onViewPaymentHistory,
+}) => {
+  return (
+    <div>
+      {accounts.map((account) => (
+        <AccountCard
+          key={account.id}
+          account={account}
+          onMakePayment={onMakePayment}
+          onViewCharges={onViewPaymentHistory}
+        />
+      ))}
+    </div>
+  )
+}
