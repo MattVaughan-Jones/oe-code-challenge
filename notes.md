@@ -13,7 +13,8 @@
 
 TODO with more time:
 
-- outsource payment handling to a 3rd party provider for security/scope of responsibility reasons
+- UI library
+- Outsource payment handling to a 3rd party provider for security/scope of responsibility reasons
 - Make search bar and dropdown components reusable
 - Implement db
 - Implement Auth for API access

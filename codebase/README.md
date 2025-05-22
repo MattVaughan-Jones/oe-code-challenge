@@ -6,7 +6,7 @@ from /codebase/backend
 ## Serve the front end
 
 from /codebase/frontend
-`npm run start`
+`npm run dev`
 
 Access the API documentation at:
 http://localhost:3001/api-docs
