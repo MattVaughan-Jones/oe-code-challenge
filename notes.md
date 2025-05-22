@@ -8,6 +8,8 @@
     Can easily change later if required.
 - wrote unit tests for only a section of the front end codebase to allow more time to demonstrate my approach to other aspects of development. Had better coverage of the back end, but only wrote tests that add value -> don't have 100% coverage
 - Decided against graphQL -> the overhead isn't justified for the simple data model and no team interfaces.
+- OpenAPI doc
+- Account validation middleware
 
 TODO with more time:
 
